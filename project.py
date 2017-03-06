@@ -1,3 +1,16 @@
+"""
+This file is the top level file for the Item Catalog project and
+uses the Flask framework.
+
+This project allows users to add items to categories. Users can also
+edit and delete their own items.
+
+JSON endpoints are provided for catalog, category, and item.
+Authentication is handled by Google's OAuth API and Facebook's OAuth API.
+
+This file contains routes and view functions.
+"""
+
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -280,7 +293,7 @@ def restaurantsJSON():
 def showRestaurants():
     restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
     if 'username' not in login_session:
-        return render_template('publicrestaurants.html', restaurants=restaurants)
+        return render_template('index.html', restaurants=restaurants)
     else:
         return render_template('restaurants.html', restaurants=restaurants)
 
