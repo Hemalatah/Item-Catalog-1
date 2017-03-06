@@ -2,3 +2,9 @@
 body {
   padding-top: 2rem;
 }
+.jumbotron {
+    background: #C33764;
+    background: -webkit-linear-gradient(to left, #C33764 , #1D2671); 
+    background: linear-gradient(to left, #C33764 , #1D2671); 
+    color: white;
+}
