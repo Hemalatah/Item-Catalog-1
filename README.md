@@ -6,7 +6,7 @@
 ### Technical Specifications
 
 - Frontend : Bootstrap v4.0 (alpha), HTML5, CSS.
-- Backend based on Flask web framework (Python).
+- Backend : Flask web framework (Python).
 
 ### Details
 
