@@ -8,3 +8,13 @@ body {
     background: linear-gradient(to left, #C33764 , #1D2671); 
     color: white;
 }
+
+.creator img {
+	width: 100px;
+	border-radius: 50%;
+}
+.creator figcaption {
+	color: white;
+	font-weight: 400;
+	margin-top: 10px;
+}

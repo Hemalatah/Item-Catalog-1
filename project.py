@@ -39,6 +39,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+"""Login check decorator, used to check if the user is logged in or not.
+If not logged in, then redirects the user to the login page 
+thus preventing unauthorized access to important data."""
 def loginCheck(f):
     @wraps(f)
     def userLog(*args, **kwargs):
@@ -353,16 +356,14 @@ def editRestaurant(restaurant_id):
 
 # Delete a restaurant
 @app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET', 'POST'])
+@loginCheck
 def deleteRestaurant(restaurant_id):
     restaurantToDelete = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if restaurantToDelete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(restaurantToDelete)
-        flash('%s Successfully Deleted' % restaurantToDelete.name)
         session.commit()
         return redirect(url_for('showRestaurants', restaurant_id=restaurant_id))
     else:
@@ -383,12 +384,10 @@ def showMenu(restaurant_id):
         userLoggedIn = False
     try : 
         if creator.id != login_session['user_id']:
-            print('Hello got the try!')
             return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator, userLoggedIn=userLoggedIn)
         else : 
             return render_template('menu.html', items=items, restaurant=restaurant, creator=creator,userLoggedIn=userLoggedIn)
     except :
-        print('hello in except')
         return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator,userLoggedIn=userLoggedIn)
 
 
@@ -413,9 +412,8 @@ def newMenuItem(restaurant_id):
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/edit', methods=['GET', 'POST'])
+@loginCheck
 def editMenuItem(restaurant_id, menu_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if login_session['user_id'] != restaurant.user_id:
@@ -439,6 +437,7 @@ def editMenuItem(restaurant_id, menu_id):
 
 # Delete a menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/delete', methods=['GET', 'POST'])
+@loginCheck
 def deleteMenuItem(restaurant_id, menu_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -471,10 +470,10 @@ def disconnect():
         del login_session['picture']
         del login_session['user_id']
         del login_session['provider']
-        flash("You have successfully been logged out.")
+        #flash("You have successfully been logged out.")
         return redirect(url_for('showRestaurants'))
     else:
-        flash("You were not logged in")
+        #flash("You were not logged in")
         return redirect(url_for('showRestaurants'))
 
 
