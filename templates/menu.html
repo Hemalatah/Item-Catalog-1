@@ -1,6 +1,6 @@
-{% extends "main.html" %}
+{% extends "header.html" %}
 {% block content %}
-{% include "header.html" %}
+<div class="container">
 	<div class="row divider green">
 		<div class="col-md-12"></div>
 	</div>
@@ -16,19 +16,6 @@
 		</div>
 	</div>
 
-<div class = 'flash'>
-		      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-          
-        <ul>
-        {% for message in messages %}
-            <li> <strong> {{ message }} </strong> </li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-    {% endwith %}
-
-</div>
 	<div class="row padding-top padding-bottom">
 		<div class="col-md-1"></div>
 		<div class="col-md-11 padding-none">
@@ -111,4 +98,5 @@
 			<div class="col-md-1"></div>
 		</div>
 	{% endif %}
+</div>
 {% endblock %}

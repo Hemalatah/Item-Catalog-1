@@ -16,6 +16,7 @@ from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem, User
 from flask import session as login_session
+from functools import wraps 
 import random
 import string
 from oauth2client.client import flow_from_clientsecrets
@@ -38,10 +39,20 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+def loginCheck(f):
+    @wraps(f)
+    def userLog(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect('/login')
+        else :
+            return f(*args, **kwargs)
+    return userLog
 
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
+    if 'username' in login_session:
+        return redirect('/restaurant')
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -323,11 +334,12 @@ def newRestaurant():
 
 
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
+@loginCheck
 def editRestaurant(restaurant_id):
     editedRestaurant = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
+#    if 'username' not in login_session:
+#        return redirect('/login')
     if editedRestaurant.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
@@ -365,28 +377,35 @@ def showMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(
-        restaurant_id=restaurant_id).all()
-    if 'username' not in login_session or creator.id != login_session['user_id']:
-        return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
-    else:
-        return render_template('menu.html', items=items, restaurant=restaurant, creator=creator)
+        restaurant_id=restaurant_id).all() 
+    userLoggedIn=True
+    if 'username' not in login_session:
+        userLoggedIn = False
+    try : 
+        if creator.id != login_session['user_id']:
+            print('Hello got the try!')
+            return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator, userLoggedIn=userLoggedIn)
+        else : 
+            return render_template('menu.html', items=items, restaurant=restaurant, creator=creator,userLoggedIn=userLoggedIn)
+    except :
+        print('hello in except')
+        return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator,userLoggedIn=userLoggedIn)
 
 
 # Create a new menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods=['GET', 'POST'])
+@loginCheck
 def newMenuItem(restaurant_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if login_session['user_id'] != restaurant.user_id:
         return "<script>function myFunction() {alert('You are not authorized to add menu items to this restaurant. Please create your own restaurant in order to add items.');}</script><body onload='myFunction()''>"
-        if request.method == 'POST':
-            newItem = MenuItem(name=request.form['name'], description=request.form['description'], price=request.form[
+    if request.method == 'POST':
+        newItem = MenuItem(name=request.form['name'], description=request.form['description'], price=request.form[
                                'price'], course=request.form['course'], restaurant_id=restaurant_id, user_id=restaurant.user_id)
-            session.add(newItem)
-            session.commit()
-            flash('New Menu %s Item Successfully Created' % (newItem.name))
-            return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+        session.add(newItem)
+        session.commit()
+        #flash('New Menu %s Item Successfully Created' % (newItem.name))
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     else:
         return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
