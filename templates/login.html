@@ -26,18 +26,26 @@
     </div>
 <div class="container">
 <div class="row">
-          <div id="signInButton">
-          <span class="g-signin"
-            data-scope="openid email"
-            data-clientid="5110943390-c4o31fr4bfm8lia0t0plc58l7k9geout.apps.googleusercontent.com"
-            data-redirecturi="postmessage"
-            data-accesstype="offline"
-            data-cookiepolicy="single_host_origin"
-            data-callback="signInCallback"
-            data-approvalprompt="force">
-          </span>
+    <div class="col-md-4">
+        <div class="card card-inverse" style="background-color: #333; border-color: #333;">
+            <div class="card-block">
+                <h3 class="card-title">Login with Google</h3>
+                <hr>
+                <div id="signInButton">
+                        <span class="g-signin"
+                            data-scope="openid email"
+                            data-clientid="5110943390-c4o31fr4bfm8lia0t0plc58l7k9geout.apps.googleusercontent.com"
+                            data-redirecturi="postmessage"
+                            data-accesstype="offline"
+                            data-cookiepolicy="single_host_origin"
+                            data-callback="signInCallback"
+                            data-approvalprompt="force">
+                          </span>
+                </div>
+            </div>
         </div>
-
+          
+    </div>
 <div id="result"></div>
 
 <script>
@@ -70,8 +78,6 @@ function signInCallback(authResult) {
 }
 </script>
 
-    </div>
-<div class="row">
 <!--END GOOGLE PLUS SIGN IN -->
     <br><br>
 <!--FACEBOOK SIGN IN -->
@@ -126,16 +132,22 @@ function signInCallback(authResult) {
 </script>
 
 <br>
-<button>
-         
+    <div class="col-md-4">
+        <div class="card card-inverse" style="background-color: #333; border-color: #333; height: 143px;">
+            <div class="card-block">
+                <h3 class="card-title">Login with Facebook</h3>
+                <hr>
+                <button>
+                    <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+                        <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+                    </fb:login-button> 
+                </button>
+            </div>
+        </div>
+          
+    </div>
 
-          <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
-<a href='javascript:sendTokenToServer()'>Login with Facebook</a>
 
-</fb:login-button>
-
-
-        </button>
 <!--END FACEBOOK SIGN IN -->
 </div>
 </div>
