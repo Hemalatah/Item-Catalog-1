@@ -453,8 +453,6 @@ def editMenuItem(restaurant_id, menu_id):
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/delete', methods=['GET', 'POST'])
 @loginCheck
 def deleteMenuItem(restaurant_id, menu_id):
-    if 'username' not in login_session:
-        return redirect('/login')
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
     if login_session['user_id'] != restaurant.user_id:
